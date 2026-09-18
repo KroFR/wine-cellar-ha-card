@@ -7,7 +7,7 @@
  *
  */
 
-const CARD_VERSION = "1.0.11";
+const CARD_VERSION = "1.0.12";
 
 class WineCellarCard extends HTMLElement {
     static STRINGS = {
@@ -20,6 +20,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Room temperature",
             mode: "Mode",
             program: "Program",
+            power: "Power",
             light_on: "Light on",
             light_off: "Light off",
             error_title: "ERROR",
@@ -36,6 +37,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Température ambiante",
             mode: "Mode",
             program: "Programme",
+            power: "Puissance",
             light_on: "Lumière allumée",
             light_off: "Lumière éteinte",
             error_title: "ERREUR",
@@ -52,6 +54,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Temperatura ambiente",
             mode: "Modo",
             program: "Programa",
+            power: "Potencia",
             light_on: "Luz encendida",
             light_off: "Luz apagada",
             error_title: "ERROR",
@@ -68,6 +71,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Temperatura ambiente",
             mode: "Modalità",
             program: "Programma",
+            power: "Potenza",
             light_on: "Luce accesa",
             light_off: "Luce spenta",
             error_title: "ERRORE",
@@ -84,6 +88,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Temperatura ambiente",
             mode: "Modo",
             program: "Programa",
+            power: "Potência",
             light_on: "Luz ligada",
             light_off: "Luz desligada",
             error_title: "ERRO",
@@ -100,6 +105,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Raumtemperatur",
             mode: "Modus",
             program: "Programm",
+            power: "Leistung",
             light_on: "Licht an",
             light_off: "Licht aus",
             error_title: "FEHLER",
@@ -116,6 +122,7 @@ class WineCellarCard extends HTMLElement {
             env_temp: "Omgevingstemperatuur",
             mode: "Modus",
             program: "Programma",
+            power: "Vermogen",
             light_on: "Licht aan",
             light_off: "Licht uit",
             error_title: "FOUT",
@@ -534,7 +541,7 @@ class WineCellarCard extends HTMLElement {
         }
         .zone-humidity ha-icon { --mdc-icon-size: 12px; }
         .panel {
-          display: grid; grid-template-columns: repeat(3,1fr);
+          display: grid; grid-template-columns: repeat(auto-fit,minmax(0,1fr));
           margin-top: 12px; padding: 12px 16px;
           border: 1px solid var(--divider-color); border-radius: 12px;
           background: #f6f8fa;
@@ -601,6 +608,7 @@ class WineCellarCard extends HTMLElement {
             <div class="info-item hidden" id="envItem"><div class="info-label">${text.env_temp}</div><div class="info-value" id="envValue">—</div></div>
             <div class="info-item hidden" id="modeItem"><div class="info-label">${text.mode}</div><div class="info-value" id="modeValue">—</div></div>
             <div class="info-item hidden" id="programItem"><div class="info-label">${text.program}</div><div class="info-value" id="programValue">—</div></div>
+            <div class="info-item hidden" id="powerItem"><div class="info-label">${text.power}</div><div class="info-value" id="powerValue">—</div></div>
           </div>
         </div>
       </ha-card>
@@ -614,6 +622,7 @@ class WineCellarCard extends HTMLElement {
         this._el("envItem").addEventListener("click", moreInfo(config.env_temp_entity));
         this._el("modeItem").addEventListener("click", moreInfo(config.mode_entity));
         this._el("programItem").addEventListener("click", moreInfo(config.program_name_entity));
+        this._el("powerItem").addEventListener("click", moreInfo(config.power_entity));
 
         for (const zone of[1, 2]) {
             this._el(`zone${zone}Ring`).addEventListener("click", moreInfo(config[`zone${zone}_temp_entity`]));
@@ -644,6 +653,8 @@ class WineCellarCard extends HTMLElement {
             modeItem: this._el("modeItem"),
             modeValue: this._el("modeValue"),
             programItem: this._el("programItem"),
+            powerItem: this._el("powerItem"),
+            powerValue: this._el("powerValue"),
             programValue: this._el("programValue"),
             infoPanel: this._el("infoPanel"),
         };
@@ -765,6 +776,13 @@ class WineCellarCard extends HTMLElement {
                 Boolean(config.program_name_entity),
                 isOn && !WineCellarCard.NO_PROGRAM_STATES.includes(programRaw),
                 programState?.state) || anyInfo;
+
+        const powerValue = config.power_entity ? this._num(config.power_entity) : null;
+        anyInfo = this._updateInfoItem(
+                "powerItem", "powerValue",
+                Boolean(config.power_entity),
+                isOn && powerValue !== null,
+                `${this._fmtNum(powerValue, 0)} W`) || anyInfo;
 
         nodes.infoPanel.classList.toggle("hidden", !anyInfo);
     }
@@ -989,6 +1007,7 @@ class WineCellarCardEditor extends HTMLElement {
               <span class="field-description">One mapping per line, format: code: label. Defaults to '0': -, '1': Standard, '2': Eco when left unconfigured. Clear the field to show the mode entity's raw, untranslated value on the card instead.</span>
             </label>
             ${this._entityPicker("program_name_entity", "Program name entity", ["sensor"])}
+            ${this._entityPicker("power_entity", "Power entity", ["sensor"])}
           </div></div>
         </details>
       </div>

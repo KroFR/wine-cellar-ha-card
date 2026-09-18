@@ -25,6 +25,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Light off",
             error_title: "ERROR",
             tip_light: "Cellar light",
+            tip_plug: "Cellar plug",
+            confirm_plug_off: "Turn off the plug? This will stop the wine cellar.",
             zone1_label: "ZONE 1",
             zone2_label: "ZONE 2",
         },
@@ -42,6 +44,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Lumière éteinte",
             error_title: "ERREUR",
             tip_light: "Éclairage cave",
+            tip_plug: "Prise de la cave",
+            confirm_plug_off: "Éteindre la prise ? Cela arrêtera la cave à vin.",
             zone1_label: "ZONE 1",
             zone2_label: "ZONE 2",
         },
@@ -59,6 +63,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Luz apagada",
             error_title: "ERROR",
             tip_light: "Luz de la bodega",
+            tip_plug: "Enchufe de la bodega",
+            confirm_plug_off: "¿Apagar el enchufe? Esto detendrá la bodega de vinos.",
             zone1_label: "ZONA 1",
             zone2_label: "ZONA 2",
         },
@@ -76,6 +82,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Luce spenta",
             error_title: "ERRORE",
             tip_light: "Luce cantina",
+            tip_plug: "Presa della cantina",
+            confirm_plug_off: "Spegnere la presa? Questo fermerà la cantina vini.",
             zone1_label: "ZONA 1",
             zone2_label: "ZONA 2",
         },
@@ -93,6 +101,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Luz desligada",
             error_title: "ERRO",
             tip_light: "Luz da adega",
+            tip_plug: "Tomada da adega",
+            confirm_plug_off: "Desligar a tomada? Isso irá parar a adega de vinhos.",
             zone1_label: "ZONA 1",
             zone2_label: "ZONA 2",
         },
@@ -110,6 +120,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Licht aus",
             error_title: "FEHLER",
             tip_light: "Kellerbeleuchtung",
+            tip_plug: "Steckdose des Weinkühlschranks",
+            confirm_plug_off: "Steckdose ausschalten? Dadurch wird der Weinkühlschrank gestoppt.",
             zone1_label: "ZONE 1",
             zone2_label: "ZONE 2",
         },
@@ -127,6 +139,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Licht uit",
             error_title: "FOUT",
             tip_light: "Kelderverlichting",
+            tip_plug: "Stekker wijnkelder",
+            confirm_plug_off: "Stekker uitschakelen? Hierdoor stopt de wijnkelder.",
             zone1_label: "ZONE 1",
             zone2_label: "ZONE 2",
         },
@@ -145,6 +159,7 @@ class WineCellarCard extends HTMLElement {
         zone2_max: 20,
         cellar_visual_position: "left",
         hide_cellar_visual: false,
+        confirm_plug_off: true,
         no_error_states: [
             "00", "0", "none", "no error", "aucune erreur",
             "unknown", "unavailable", ""
@@ -320,6 +335,23 @@ class WineCellarCard extends HTMLElement {
 
     _isLightOn(state) {
         return ["on", "true"].includes(String(state ?? "").toLowerCase());
+    }
+    _toggle(entityId) {
+        const domain = entityId.split(".")[0];
+        const svcDomain = ["switch", "light", "input_boolean", "fan", "automation"].includes(domain)
+             ? domain
+             : "homeassistant";
+        this._hass.callService(svcDomain, "toggle", {
+            entity_id: entityId
+        });
+    }
+    _confirmTogglePlug() {
+        const config = this._config;
+        const text = this._t;
+        const isOn = this._st(config.plug_entity)?.state === "on";
+        if (isOn && config.confirm_plug_off !== false && !window.confirm(text.confirm_plug_off))
+            return;
+        this._toggle(config.plug_entity);
     }
 
     _onLightClick() {
@@ -566,6 +598,9 @@ class WineCellarCard extends HTMLElement {
             <div class="h-title" id="name"></div>
             <div class="badge"><span class="b-dot"></span><span id="badgeText"></span></div>
             <div class="h-spacer"></div>
+            <div class="h-btn hidden" id="plugBtn" title="${text.tip_plug}">
+              <ha-icon icon="mdi:power-socket-eu"></ha-icon>
+            </div>
             <div class="h-btn hidden" id="lightBtn" title="${text.tip_light}">
               <ha-icon icon="mdi:lightbulb-off-outline" id="lightIcon"></ha-icon>
             </div>
@@ -620,6 +655,7 @@ class WineCellarCard extends HTMLElement {
 
         this._el("errorBanner").addEventListener("click", moreInfo(config.error_entity));
         this._el("lightBtn").addEventListener("click", () => this._onLightClick());
+        this._el("plugBtn").addEventListener("click", () => this._confirmTogglePlug());
         this._el("envItem").addEventListener("click", moreInfo(config.env_temp_entity));
         this._el("modeItem").addEventListener("click", moreInfo(config.mode_entity));
         this._el("programItem").addEventListener("click", moreInfo(config.program_name_entity));
@@ -645,6 +681,7 @@ class WineCellarCard extends HTMLElement {
             badgeText: this._el("badgeText"),
             errorBanner: this._el("errorBanner"),
             errorText: this._el("errorText"),
+            plugBtn: this._el("plugBtn"),
             lightBtn: this._el("lightBtn"),
             lightIcon: this._el("lightIcon"),
             cvGlow: this._el("cvGlow"),
@@ -749,6 +786,15 @@ class WineCellarCard extends HTMLElement {
             nodes.lightIcon.setAttribute("icon", isOn && lightOn ? "mdi:lightbulb-on" : "mdi:lightbulb-off-outline");
         } else {
             nodes.lightBtn.classList.add("hidden");
+        }
+
+        if (config.plug_entity) {
+            const plugOn = this._st(config.plug_entity)?.state === "on";
+            nodes.plugBtn.classList.remove("hidden");
+            nodes.plugBtn.classList.toggle("on", plugOn);
+            nodes.plugBtn.title = text.tip_plug;
+        } else {
+            nodes.plugBtn.classList.add("hidden");
         }
 
         nodes.cvGlow.setAttribute("opacity", isOn && lightOn ? ".55" : (isOn ? ".15" : "0"));
@@ -862,12 +908,16 @@ class WineCellarCardEditor extends HTMLElement {
         language: WineCellarCardEditor.AUTO_LANGUAGE,
         cellar_visual_position: WineCellarCard.DEFAULTS.cellar_visual_position,
     };
+    static SWITCH_DEFAULTS = {
+        confirm_plug_off: WineCellarCard.DEFAULTS.confirm_plug_off,
+    };
 
     static SECTION_ICONS = {
         general: "mdi:cog-outline",
         zone1: "mdi:numeric-1-circle-outline",
         zone2: "mdi:numeric-2-circle-outline",
         extra: "mdi:puzzle-outline",
+        power: "mdi:flash-outline",
     };
 
     static PLACEHOLDER_TEXT_KEYS = {
@@ -1024,7 +1074,17 @@ class WineCellarCardEditor extends HTMLElement {
               <span class="field-description">One mapping per line, format: code: label. Defaults to '0': -, '1': Standard, '2': Eco when left unconfigured. Clear the field to show the mode entity's raw, untranslated value on the card instead.</span>
             </label>
             ${this._entityPicker("program_name_entity", "Program name entity", ["sensor"])}
+          </div></div>
+        </details>
+        <details class="section">
+          ${this._sectionSummary(icons.power, "Power monitoring")}
+          <div class="section-content"><div class="entity-grid">
             ${this._entityPicker("power_entity", "Power entity", ["sensor"])}
+            ${this._entityPicker("plug_entity", "Plug entity", ["switch", "input_boolean"])}
+            <div class="switch-row">
+              <div class="switch-text"><span class="switch-label">Confirm before turning off plug</span><span class="field-description">Show a confirmation popup when turning off the plug entity.</span></div>
+              <ha-switch data-config="confirm_plug_off"></ha-switch>
+            </div>
           </div></div>
         </details>
       </div>
@@ -1122,7 +1182,9 @@ class WineCellarCardEditor extends HTMLElement {
                 return;
             }
             if (element.tagName === "HA-SWITCH") {
-                element.checked = value === true;
+                const isEmpty = value === undefined || value === null;
+                const fallback = WineCellarCardEditor.SWITCH_DEFAULTS[key];
+                element.checked = isEmpty && fallback !== undefined ? fallback : value === true;
                 return;
             }
             if (element.tagName === "TEXTAREA" && key === "mode_names") {

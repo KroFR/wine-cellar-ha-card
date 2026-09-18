@@ -133,6 +133,7 @@ class WineCellarCard extends HTMLElement {
     };
 
     static NO_PROGRAM_STATES = ["none", "unknown", "unavailable", ""];
+    static INFO_ITEM_KEYS = ["envItem", "modeItem", "programItem", "powerItem"];
 
     static RING_RADIUS = 39;
     static RING_CIRCUMFERENCE = 2 * Math.PI * WineCellarCard.RING_RADIUS;
@@ -550,7 +551,7 @@ class WineCellarCard extends HTMLElement {
           background: var(--secondary-background-color);
         }
         .info-item { min-width: 0; padding: 0 10px; border-left: 1px solid var(--divider-color); cursor: pointer; }
-        .info-item:first-child { border-left: 0; padding-left: 0; }
+        .info-item.no-border { border-left: 0; padding-left: 0; }
         .info-label { color: var(--secondary-text-color); font-size: 10px; font-weight: 700; letter-spacing: .8px; }
         .info-value { margin-top: 4px; color: var(--primary-text-color); font-size: 13.5px; font-weight: 800; overflow-wrap: break-word; }
         .content-row:has(> .cellar-visual.hidden) .ring-box { width: 84px; height: 84px; }
@@ -697,6 +698,21 @@ class WineCellarCard extends HTMLElement {
         this._nodes[valueKey].textContent = hasValue ? displayValue : "N/A";
         return true;
     }
+    _updateInfoItemBorders() {
+        let firstVisibleKey = null;
+        for (const itemKey of WineCellarCard.INFO_ITEM_KEYS) {
+            const node = this._nodes[itemKey];
+            if (node && !node.classList.contains("hidden")) {
+                firstVisibleKey = itemKey;
+                break;
+            }
+        }
+        for (const itemKey of WineCellarCard.INFO_ITEM_KEYS) {
+            const node = this._nodes[itemKey];
+            if (node)
+                node.classList.toggle("no-border", itemKey === firstVisibleKey);
+        }
+    }
 
     _update() {
         const config = this._config;
@@ -784,6 +800,7 @@ class WineCellarCard extends HTMLElement {
                 isOn && powerValue !== null,
                 `${this._fmtNum(powerValue, 0)} W`) || anyInfo;
 
+        this._updateInfoItemBorders();
         nodes.infoPanel.classList.toggle("hidden", !anyInfo);
     }
 

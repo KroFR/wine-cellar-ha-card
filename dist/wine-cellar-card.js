@@ -9,6 +9,9 @@
 
 const CARD_VERSION = "1.0.14";
 
+/* ---------------------------------------------------------------------- */
+/*  Main card                                                             */
+/* ---------------------------------------------------------------------- */
 class WineCellarCard extends HTMLElement {
 	static TRANSLATIONS = {
 		en: {
@@ -850,6 +853,9 @@ class WineCellarCard extends HTMLElement {
 	}
 }
 
+/* ---------------------------------------------------------------------- */
+/*  Visual editor                                                         */
+/* ---------------------------------------------------------------------- */
 class WineCellarCardEditor extends HTMLElement {
 	static SELECT_OPTIONS = {
 		cellar_visual_position: [{
@@ -1228,6 +1234,9 @@ class WineCellarCardEditor extends HTMLElement {
 	}
 }
 
+/* ---------------------------------------------------------------------- */
+/*  Registration                                                          */
+/* ---------------------------------------------------------------------- */
 if (!customElements.get("wine-cellar-card-editor")) {
 	customElements.define("wine-cellar-card-editor", WineCellarCardEditor);
 }

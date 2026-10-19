@@ -44,7 +44,7 @@ This card was built to pair with the [hOn integration](https://github.com/gvigro
 
 ### Manual
 1. Download `wine-cellar-card.js` from the `dist` folder of this repository.
-2. Copy it to `www/community/wine-cellar-ha-card/wine-cellar-card.js` in your Home Assistant instance.
+2. Copy it to `/local/community/wine-cellar-ha-card/wine-cellar-card.js` in your Home Assistant instance.
 3. Go to **Settings** > **Dashboards** > three-dot menu > **Resources**.
 4. Select **Add resource**, set the URL to `/hacsfiles/wine-cellar-ha-card/wine-cellar-card.js?v=1`, and set resource type to **JavaScript module**.
 5. Refresh your browser.

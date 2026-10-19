@@ -1,4 +1,4 @@
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
+[![HACS Custom](https://img.shields.io/badge/HACS-Default-green.svg)](https://hacs.xyz/)
 [![GitHub Release](https://img.shields.io/github/v/release/KroFR/wine-cellar-ha-card)](https://github.com/KroFR/wine-cellar-ha-card/releases)
 [![Static Badge](https://img.shields.io/badge/Home_Assistant-2024.1+-blue)](https://www.home-assistant.io/)
 [![HACS Validation](https://github.com/KroFR/wine-cellar-ha-card/actions/workflows/hacs.yaml/badge.svg)](https://github.com/KroFR/wine-cellar-ha-card/actions/workflows/hacs.yaml)

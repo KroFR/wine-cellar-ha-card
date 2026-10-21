@@ -1,4 +1,4 @@
-[![HACS Custom](https://img.shields.io/badge/HACS-Default-green.svg)](https://hacs.xyz/)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-green.svg)](https://hacs.xyz/)
 [![GitHub Release](https://img.shields.io/github/v/release/KroFR/wine-cellar-ha-card)](https://github.com/KroFR/wine-cellar-ha-card/releases)
 [![Static Badge](https://img.shields.io/badge/Home_Assistant-2024.1+-blue)](https://www.home-assistant.io/)
 [![HACS Validation](https://github.com/KroFR/wine-cellar-ha-card/actions/workflows/hacs.yaml/badge.svg)](https://github.com/KroFR/wine-cellar-ha-card/actions/workflows/hacs.yaml)
@@ -45,16 +45,11 @@ or
 3. Search for "Wine Cellar Card"
 4. Click the download button
 
-
-
-
-
-
 ### Manual
 1. Download `wine-cellar-card.js` from the `dist` folder of this repository.
-2. Copy it to `/local/community/wine-cellar-ha-card/wine-cellar-card.js` in your Home Assistant instance.
+2. Copy it to `<config>/www/wine-cellar-card.js` in your Home Assistant instance.
 3. Go to **Settings** > **Dashboards** > three-dot menu > **Resources**.
-4. Select **Add resource**, set the URL to `/hacsfiles/wine-cellar-ha-card/wine-cellar-card.js?v=1`, and set resource type to **JavaScript module**.
+4. Select **Add resource**, set the URL to `/local/wine-cellar-card.js?v=1`, and set resource type to **JavaScript module**.
 5. Refresh your browser.
 
 ## Adding the card

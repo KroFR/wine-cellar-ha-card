@@ -7,7 +7,7 @@
  *
  */
 
-const CARD_VERSION = "1.0.14";
+const CARD_VERSION = "1.0.15";
 
 /* ---------------------------------------------------------------------- */
 /*  Main card                                                             */
@@ -685,6 +685,8 @@ class WineCellarCard extends HTMLElement {
 			this._nodes[`zone${zone}Unit`] = this._el(`zone${zone}Unit`);
 			this._nodes[`zone${zone}Arc`] = this._el(`zone${zone}Arc`);
 			this._nodes[`zone${zone}Target`] = this._el(`zone${zone}Target`);
+			this._nodes[`zone${zone}TargetLabel`] = this._el(`zone${zone}TargetLabel`);
+			this._nodes[`zone${zone}TargetValue`] = this._el(`zone${zone}TargetValue`);
 			this._nodes[`zone${zone}HumidityRow`] = this._el(`zone${zone}HumidityRow`);
 			this._nodes[`zone${zone}Humidity`] = this._el(`zone${zone}Humidity`);
 		}
@@ -702,7 +704,7 @@ class WineCellarCard extends HTMLElement {
 		  </svg>
 		  <div class="ring-center"><div class="ring-temp" id="zone${zone}Temp">—</div><div class="ring-unit" id="zone${zone}Unit">°C</div></div>
 		</div>
-		<div class="zone-target" id="zone${zone}Target"></div>
+		<div class="zone-target" id="zone${zone}Target"><span id="zone${zone}TargetLabel"></span><b id="zone${zone}TargetValue"></b></div>
 		<div class="zone-humidity hidden" id="zone${zone}HumidityRow"><ha-icon icon="mdi:water-percent"></ha-icon><span id="zone${zone}Humidity"></span></div>
 	  </div>
 	`;
@@ -841,9 +843,17 @@ class WineCellarCard extends HTMLElement {
 		nodes[`zone${zone}Unit`].textContent = this._unit(tempEntity);
 		const fraction = isOn && temp !== null && max !== min ? (temp - min) / (max - min) : 0;
 		nodes[`zone${zone}Arc`].setAttribute("stroke-dasharray", this._ringDasharray(fraction));
-		nodes[`zone${zone}Target`].innerHTML = targetEntity
-			 ? (isOn && target !== null ? `${this._t.target}: <b>${this._fmtNum(target, 1)} ${this._unit(targetEntity)}</b>` : `${this._t.target}: <b>N/A</b>`)
-			 : "";
+		const targetLabel = nodes[`zone${zone}TargetLabel`];
+		const targetValue = nodes[`zone${zone}TargetValue`];
+		if (targetEntity) {
+			targetLabel.textContent = `${this._t.target}: `;
+			targetValue.textContent = isOn && target !== null
+				? `${this._fmtNum(target, 1)} ${this._unit(targetEntity)}`
+				: "N/A";
+		} else {
+			targetLabel.textContent = "";
+			targetValue.textContent = "";
+		}
 		if (humidityEntity) {
 			nodes[`zone${zone}HumidityRow`].classList.remove("hidden");
 			nodes[`zone${zone}Humidity`].textContent = isOn && humidity !== null ? `${Math.round(humidity)}%` : "N/A";

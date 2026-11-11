@@ -558,9 +558,9 @@ class WineCellarCard extends HTMLElement {
 		.ring-box svg { width: 100%; height: 100%; }
 		.ring-track { stroke: var(--divider-color); }
 		.ring-arc { stroke: #b0335a; stroke-linecap: round; transition: stroke-dasharray .5s ease; }
-		.ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+		.ring-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 3px; }
 		.ring-temp { color: var(--primary-text-color); font-size: 14.5px; font-weight: 800; line-height: 1; }
-		.ring-unit { color: var(--secondary-text-color); font-size: 8.5px; font-weight: 700; }
+		.ring-unit { color: var(--secondary-text-color); font-size: 8.5px; font-weight: 700; line-height: 1; }
 		.zone-target { margin-top: 6px; color: var(--secondary-text-color); font-size: 9.5px; cursor: pointer; }
 		.zone-target b { color: var(--primary-text-color); }
 		.zone-humidity {

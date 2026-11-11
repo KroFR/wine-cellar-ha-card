@@ -7,7 +7,7 @@
  *
  */
 
-const CARD_VERSION = "1.0.15";
+const CARD_VERSION = "1.0.16";
 
 /* ---------------------------------------------------------------------- */
 /*  Main card                                                             */
@@ -309,6 +309,10 @@ class WineCellarCard extends HTMLElement {
 		}).format(number);
 	}
 
+	_capitalize(value) {
+		const text = String(value ?? "");
+		return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+	}
 	_unit(entityId) {
 		const unit = this._st(entityId)?.attributes?.unit_of_measurement;
 		if (unit)
@@ -382,7 +386,7 @@ class WineCellarCard extends HTMLElement {
 	_displayTemp(zone, isOn) {
 		const tempEntity = this._config[`zone${zone}_temp_entity`];
 		const temp = tempEntity ? this._num(tempEntity) : null;
-		return isOn && temp !== null ? `${this._fmtNum(temp, 1)}°` : "N/A";
+		return isOn && temp !== null ? `${this._fmtNum(temp, 0)}°` : "N/A";
 	}
 
 	_dualZoneBottlesMarkup() {
@@ -804,14 +808,14 @@ class WineCellarCard extends HTMLElement {
 				"modeItem", "modeValue",
 				Boolean(config.mode_entity),
 				isOn && modeRaw !== undefined && modeRaw !== null,
-				modeLabel) || anyInfo;
+				this._capitalize(modeLabel)) || anyInfo;
 		const programState = config.program_name_entity ? this._st(config.program_name_entity) : undefined;
 		const programRaw = String(programState?.state ?? "").toLowerCase();
 		anyInfo = this._updateInfoItem(
 				"programItem", "programValue",
 				Boolean(config.program_name_entity),
 				isOn && !WineCellarCard.NO_PROGRAM_STATES.includes(programRaw),
-				programState?.state) || anyInfo;
+				this._capitalize(programState?.state)) || anyInfo;
 		const powerValue = config.power_entity ? this._num(config.power_entity) : null;
 		anyInfo = this._updateInfoItem(
 				"powerItem", "powerValue",
@@ -839,7 +843,7 @@ class WineCellarCard extends HTMLElement {
 		const humidity = humidityEntity ? this._num(humidityEntity) : null;
 		const min = Number(config[`zone${zone}_min`]);
 		const max = Number(config[`zone${zone}_max`]);
-		nodes[`zone${zone}Temp`].textContent = isOn && temp !== null ? this._fmtNum(temp, 1) : "N/A";
+		nodes[`zone${zone}Temp`].textContent = isOn && temp !== null ? this._fmtNum(temp, 0) : "N/A";
 		nodes[`zone${zone}Unit`].textContent = this._unit(tempEntity);
 		const fraction = isOn && temp !== null && max !== min ? (temp - min) / (max - min) : 0;
 		nodes[`zone${zone}Arc`].setAttribute("stroke-dasharray", this._ringDasharray(fraction));
@@ -848,7 +852,7 @@ class WineCellarCard extends HTMLElement {
 		if (targetEntity) {
 			targetLabel.textContent = `${this._t.target}: `;
 			targetValue.textContent = isOn && target !== null
-				? `${this._fmtNum(target, 1)} ${this._unit(targetEntity)}`
+				? `${this._fmtNum(target, 0)} ${this._unit(targetEntity)}`
 				: "N/A";
 		} else {
 			targetLabel.textContent = "";
